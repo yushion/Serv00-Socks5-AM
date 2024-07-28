@@ -71,7 +71,10 @@ chmod +x check_socks5.sh
 ```
 crontab -e
 ```
+
 上面命令完会显示下面信息就是有保活设置成功
+
+```
 * * * * * /home/domains/<username>.serv00.net/socks5/check_socks5.sh > /dev/null 2>&1
 ```
 
