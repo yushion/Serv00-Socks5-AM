@@ -1,4 +1,4 @@
-# serv00一键脚本部署socks5
+# serv00一键脚本部署socks5,可用来做CF的反代IP
 
 这个项目的脚本会安装pm2然后用pm2管理并运行一个socks5代理,可用来做CF的反代IP
 
@@ -73,6 +73,7 @@ crontab -e
 ```
 上面命令完会显示下面信息就是有保活设置成功
 * * * * * /home/domains/<username>.serv00.net/socks5/check_socks5.sh > /dev/null 2>&1
+```
 
 ## 其它说明：
 
