@@ -313,4 +313,4 @@ if [ "$pm2save" != "N" ]; then
 fi
 
 pm2 list
-echo "脚本执行完成。致谢：RealNeoMan、k0baya"
+echo "脚本执行完成。"
