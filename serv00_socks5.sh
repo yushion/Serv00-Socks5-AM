@@ -2,107 +2,24 @@
 
 # 介绍信息
 echo -e "\e[32m
- ____   ___   ____ _  ______ ____  
+  ____   ___   ____ _  ______ ____  
  / ___| / _ \ / ___| |/ / ___| ___|  
  \___ \| | | | |   | ' /\___ \___ \ 
-  ___) | |_| | |___| . \ ___) |__) |           供CF使用socks5
+  ___) | |_| | |___| . \ ___) |__) |           供CF变量socks5
  |____/ \___/ \____|_|\_\____/____/               
+
 \e[0m"
 
 # 获取当前用户名
 USER=$(whoami)
+WORKDIR="/home/${USER,,}/.nezha-agent"
+FILE_PATH="/home/${USER,,}/.s5"
 
-# 检查pm2是否已安装并可用
-if command -v pm2 > /dev/null 2>&1 && [[ $(which pm2) == "/home/${USER,,}/.npm-global/bin/pm2" ]]; then
-  echo "pm2已安装且可用，跳过安装步骤。"
-else
-  # 安装pm2
-  echo "正在安装pm2，请稍候..."
-  curl -s https://raw.githubusercontent.com/k0baya/alist_repl/main/serv00/install-pm2.sh | bash
+###################################################
 
-  if [ $? -ne 0 ]; then
-    echo "pm2安装失败，请检查网络连接或稍后再试。"
-    exit 1
-  fi
-  echo "pm2安装成功。"
-
-  # 检查pm2路径
-  if [[ $(which pm2) != "/home/${USER,,}/.npm-global/bin/pm2" ]]; then
-    echo "pm2未正确配置。请断开并重新连接SSH后再运行此脚本。"
-    exit 1
-  fi
-fi
-
-# 检查socks5目录是否存在
-SOCKS5_DIR=~/domains/${USER,,}.serv00.net/socks5
-if [ -d "$SOCKS5_DIR" ]; then
-  read -p "目录$SOCKS5_DIR已经存在，是否继续安装？(Y/N): " CONTINUE_INSTALL
-  CONTINUE_INSTALL=${CONTINUE_INSTALL^^} # 转换为大写
-  if [ "$CONTINUE_INSTALL" != "Y" ]; then
-    echo "安装已取消。"
-    exit 1
-  fi
-else
-  # 创建socks5目录
-  echo "正在创建socks5目录..."
-  mkdir -p "$SOCKS5_DIR"
-fi
-
-cd "$SOCKS5_DIR"
-
-# 检查node-socks5-server是否已安装
-if npm list node-socks5-server > /dev/null 2>&1; then
-  echo "node-socks5-server已安装，跳过安装步骤。"
-else
-  # 初始化npm项目
-  echo "正在初始化npm项目..."
-  npm init -y
-
-  # 安装node-socks5-server
-  echo "正在安装node-socks5-server，请稍候..."
-  npm install node-socks5-server
-
-  if [ $? -ne 0 ]; then
-    echo "node-socks5-server安装失败，请检查网络连接或稍后再试。"
-    exit 1
-  fi
-  echo "node-socks5-server安装成功。"
-fi
-
-# 检查socks5.js文件是否存在
-SOCKS5_JS="$SOCKS5_DIR/socks5.js"
-if [ -f "$SOCKS5_JS" ]; then
-  read -p "当前目录下已经有socks5.js文件，是否要覆盖？(Y/N): " OVERWRITE_FILE
-  OVERWRITE_FILE=${OVERWRITE_FILE^^} # 转换为大写
-  if [ "$OVERWRITE_FILE" != "Y" ]; then
-    echo "文件未覆盖，安装已取消。"
-    exit 1
-  fi
-fi
-
+socks5_config(){
 # 提示用户输入socks5端口号
 read -p "请输入socks5端口号: " SOCKS5_PORT
-
-# 生成socks5.js文件
-cat <<EOF > socks5.js
-'use strict';
-
-const socks5 = require('node-socks5-server');
-
-const users = {
-  'user': 'password',
-};
-
-const userPassAuthFn = (user, password) => {
-  if (users[user] === password) return true;
-  return false;
-};
-
-const server = socks5.createServer({
-  userPassAuthFn,
-});
-server.listen($SOCKS5_PORT);
-EOF
 
 # 提示用户输入用户名和密码
 read -p "请输入socks5用户名: " SOCKS5_USER
@@ -117,38 +34,191 @@ while true; do
   fi
 done
 
-# 修改socks5.js文件中的用户名和密码
-sed -i '' "s/'user': 'password'/'$SOCKS5_USER': '$SOCKS5_PASS'/" socks5.js
+# config.js文件
+  cat > ${FILE_PATH}/config.json << EOF
+{
+  "log": {
+    "access": "/dev/null",
+    "error": "/dev/null",
+    "loglevel": "none"
+  },
+  "inbounds": [
+    {
+      "port": "$SOCKS5_PORT",
+      "protocol": "socks",
+      "tag": "socks",
+      "settings": {
+        "auth": "password",
+        "udp": false,
+        "ip": "0.0.0.0",
+        "userLevel": 0,
+        "accounts": [
+          {
+            "user": "$SOCKS5_USER",
+            "pass": "$SOCKS5_PASS"
+          }
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom"
+    }
+  ]
+}
+EOF
+}
 
-# 检查并删除已存在的同名pm2进程
-if pm2 list | grep -q socks5_proxy; then
-  pm2 stop socks5_proxy
-  pm2 delete socks5_proxy
-fi
-
-# 启动socks5.js代理
-echo "正在启动socks5代理..."
-pm2 start socks5.js --name socks5_proxy
-
-# 延迟检测以确保代理启动
-echo "等待代理启动..."
-sleep 5
-
-# 检查pm2中进程的运行状态
-PM2_STATUS=$(pm2 show socks5_proxy | grep status | awk '{print $4}')
-if [ "$PM2_STATUS" == "online" ]; then
-  echo "代理服务已启动。正在检查代理运行状态..."
-  CURL_OUTPUT=$(curl -s ip.sb --socks5 $SOCKS5_USER:$SOCKS5_PASS@localhost:$SOCKS5_PORT)
-  if [[ $CURL_OUTPUT =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "代理创建成功，返回的IP是: $CURL_OUTPUT"
-    echo "代理工作正常，脚本结束。"
+install_socks5(){
+  socks5_config
+  if [ ! -e "${FILE_PATH}/s5" ]; then
+    curl -L -sS -o "${FILE_PATH}/s5" "https://github.com/eooce/test/releases/download/freebsd/web"
   else
-    echo "代理创建失败，请检查自己输入的内容。"
-    pm2 stop socks5_proxy
-    pm2 delete socks5_proxy
-    exit 1
+    read -p "socks5 程序已存在，是否重新下载覆盖？(Y/N 回车N)" downsocks5
+    downsocks5=${downsocks5^^} # 转换为大写
+    if [ "$downsocks5" == "Y" ]; then
+      curl -L -sS -o "${FILE_PATH}/s5" "https://github.com/eooce/test/releases/download/freebsd/web"
+    else
+      echo "使用已存在的 socks5 程序"
+    fi
+  fi
+
+  if [ -e "${FILE_PATH}/s5" ]; then
+    chmod 777 "${FILE_PATH}/s5"
+    nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &
+	  sleep 2
+    pgrep -x "s5" > /dev/null && echo -e "\e[1;32ms5 is running\e[0m" || { echo -e "\e[1;35ms5 is not running, restarting...\e[0m"; pkill -x "s5" && nohup "${FILE_PATH}/s5" -c ${FILE_PATH}/config.json >/dev/null 2>&1 & sleep 2; echo -e "\e[1;32ms5 restarted\e[0m"; }
+    CURL_OUTPUT=$(curl -s ip.sb --socks5 $SOCKS5_USER:$SOCKS5_PASS@localhost:$SOCKS5_PORT)
+    if [[ $CURL_OUTPUT =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      echo "代理创建成功，返回的IP是: $CURL_OUTPUT"
+      echo "socks://${SOCKS5_USER}:${SOCKS5_PASS}@${CURL_OUTPUT}:${SOCKS5_PORT}"
+    else
+      echo "代理创建失败，请检查自己输入的内容。"
+    fi
+  fi
+}
+
+download_agent() {
+    DOWNLOAD_LINK="https://github.com/nezhahq/agent/releases/latest/download/nezha-agent_freebsd_amd64.zip"
+    if ! wget -qO "$ZIP_FILE" "$DOWNLOAD_LINK"; then
+        echo 'error: Download failed! Please check your network or try again.'
+        return 1
+    fi
+    return 0
+}
+
+decompression() {
+    unzip "$1" -d "$TMP_DIRECTORY"
+    EXIT_CODE=$?
+    if [ ${EXIT_CODE} -ne 0 ]; then
+        rm -r "$TMP_DIRECTORY"
+        echo "removed: $TMP_DIRECTORY"
+        exit 1
+    fi
+}
+
+install_agent() {
+    install -m 755 ${TMP_DIRECTORY}/nezha-agent ${WORKDIR}/nezha-agent
+}
+
+generate_run_agent(){
+    echo "关于接下来需要输入的三个变量，请注意："
+    echo "Dashboard 站点地址可以写 IP 也可以写域名（域名不可套 CDN）;但是请不要加上 http:// 或者 https:// 等前缀，直接写 IP 或者域名即可；"
+    echo "面板 RPC 端口为你的 Dashboard 安装时设置的用于 Agent 接入的 RPC 端口（默认 5555）；"
+    echo "Agent 密钥需要先在管理面板上添加 Agent 获取。"
+    printf "请输入 Dashboard 站点地址："
+    read -r NZ_DASHBOARD_SERVER
+    printf "请输入面板 RPC 端口："
+    read -r NZ_DASHBOARD_PORT
+    printf "请输入 Agent 密钥: "
+    read -r NZ_DASHBOARD_PASSWORD
+    printf "是否启用针对 gRPC 端口的 SSL/TLS加密 (--tls)，需要请按 [Y]，默认是不需要，不理解的用户可回车跳过: "
+    read -r NZ_GRPC_PROXY
+    echo "${NZ_GRPC_PROXY}" | grep -qiw 'Y' && ARGS='--tls'
+
+    if [ -z "${NZ_DASHBOARD_SERVER}" ] || [ -z "${NZ_DASHBOARD_PASSWORD}" ]; then
+        echo "error! 所有选项都不能为空"
+        return 1
+        rm -rf ${WORKDIR}
+        exit
+    fi
+
+    cat > ${WORKDIR}/start.sh << EOF
+#!/bin/bash
+pgrep -f 'nezha-agent' | xargs -r kill
+cd ${WORKDIR}
+TMPDIR="${WORKDIR}" exec ${WORKDIR}/nezha-agent -s ${NZ_DASHBOARD_SERVER}:${NZ_DASHBOARD_PORT} -p ${NZ_DASHBOARD_PASSWORD} --report-delay 4 --disable-auto-update --disable-force-update ${ARGS} >/dev/null 2>&1
+EOF
+    chmod +x ${WORKDIR}/start.sh
+}
+
+run_agent(){
+    nohup ${WORKDIR}/start.sh >/dev/null 2>&1 &
+    printf "nezha-agent已经准备就绪，请按下回车键启动\n"
+    read
+    printf "正在启动nezha-agent，请耐心等待...\n"
+    sleep 3
+    if pgrep -f "nezha-agent -s" > /dev/null; then
+        echo "nezha-agent 已启动！"
+        echo "如果面板处未上线，请检查参数是否填写正确，并停止 agent 进程，删除已安装的 agent 后重新安装！"
+        echo "停止 agent 进程的命令：pgrep -f 'nezha-agent' | xargs -r kill"
+        echo "删除已安装的 agent 的命令：rm -rf ~/.nezha-agent"
+    else
+        rm -rf "${WORKDIR}"
+        echo "nezha-agent 启动失败，请检查参数填写是否正确，并重新安装！"
+    fi
+}
+
+install_nezha_agent(){
+  mkdir -p ${WORKDIR}
+  cd ${WORKDIR}
+  TMP_DIRECTORY="$(mktemp -d)"
+  ZIP_FILE="${TMP_DIRECTORY}/nezha-agent_freebsd_amd64.zip"
+
+  [ ! -e ${WORKDIR}/start.sh ] && generate_run_agent
+  [ ! -e ${WORKDIR}/nezha-agent ] && download_agent \
+  && decompression "${ZIP_FILE}" \
+  && install_agent
+  rm -rf "${TMP_DIRECTORY}"
+  [ -e ${WORKDIR}/start.sh ] && run_agent
+}
+
+########################梦开始的地方###########################
+
+read -p "是否安装 socks5 (Y/N 回车N): " socks5choice
+socks5choice=${socks5choice^^} # 转换为大写
+if [ "$socks5choice" == "Y" ]; then
+  # 检查socks5目录是否存在
+  if [ -d "$FILE_PATH" ]; then
+    install_socks5
+  else
+    # 创建socks5目录
+    echo "正在创建 socks5 目录..."
+    mkdir -p "$FILE_PATH"
+    install_socks5
   fi
 else
-  echo "代理服务启动失败，请检查配置。"
-  exit 1
+  echo "不安装 socks5"
 fi
+
+read -p "是否安装 nezha-agent (Y/N 回车N): " choice
+choice=${choice^^} # 转换为大写
+if [ "$choice" == "Y" ]; then
+  echo "正在安装 nezha-agent..."
+  install_nezha_agent
+else
+  echo "不安装 nezha-agent"
+fi
+
+read -p "是否添加 crontab 守护进程的计划任务(Y/N 回车N): " crontabgogogo
+crontabgogogo=${crontabgogogo^^} # 转换为大写
+if [ "$crontabgogogo" == "Y" ]; then
+  echo "添加 crontab 守护进程的计划任务"
+  curl -s https://raw.githubusercontent.com/ansoncloud8/am-serv00-socks5/main/check_cron.sh | bash
+else
+  echo "不添加 crontab 计划任务"
+fi
+
+echo "脚本执行完成。"
