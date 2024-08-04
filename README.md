@@ -39,7 +39,7 @@ ssh <username>@<panel>.serv00.com
 - 2、进入到面板后复制下面代码到面板安装
 ### nohup模式(一键安装 **新手小白用这个！**)
 ```
-bash <(curl -s https://raw.githubusercontent.com/ansoncloud8/am-serv00-socks5/main/serv00_socks5.sh)
+bash <(curl -s https://raw.githubusercontent.com/ansoncloud8/am-serv00-socks5/main/install-socks5.sh)
 ```
 
 - 3、根据脚本的提示信息进行操作
@@ -76,7 +76,7 @@ crontab -e
 ### ~pm2模式~
 - ~一键安装~
 
-~`bash <(curl -s https://raw.githubusercontent.com/cmliu/socks5-for-serv00/pm2/install-socks5.sh)`~
+~`bash <(curl -s https://raw.githubusercontent.com/ansoncloud8/am-serv00-socks5/install-socks5-pm2.sh)`~
 
 
 - 一键卸载pm2
