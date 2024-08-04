@@ -1,6 +1,6 @@
 # 免费serv00服务器一键脚本部署socks5
 
-这个项目的脚本安装管理并运行一个socks5代理,替换CF的PROXYIP,解决ChatGPT、TikTok等问题,不再烦恼优选PROXYIP
+这个项目的脚本安装管理并运行一个socks5代理,替换CF的PROXYIP,解决访问ChatGPT、TikTok等问题,不再烦恼优选PROXYIP
 
 # 部署教程：
 
