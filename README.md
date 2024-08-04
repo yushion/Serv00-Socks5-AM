@@ -62,12 +62,14 @@ crontab定时任务(建议添加,填Y)
 
 4、查看保活crontab任务
 ```
-crontab -e
+crontab -l
 ```
 
 上面命令完会显示下面信息就是有保活设置成功
 ```
-*/12 * * * * pgrep -x \"socks5\" > /dev/null
+@reboot pkill -kill -u <username> && nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 & && nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &
+*/12 * * * * pgrep -x "nezha-agent" > /dev/null || nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &
+*/12 * * * * pgrep -x "s5" > /dev/null || nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &
 ```
 
 ## 其它说明：
