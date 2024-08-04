@@ -1,7 +1,6 @@
-# 免费serv00服务器一键脚本部署socks5,可用来做CF的反代IP
+# 免费serv00服务器一键脚本部署socks5
 
-这个项目的脚本会安装pm2然后用pm2管理并运行一个socks5代理,可用来做CF的反代IP
-
+这个项目的脚本安装管理并运行一个socks5代理,替换CF的PROXYIP,解决ChatGPT、TikTok等问题,不再烦恼优选PROXYIP
 
 # 部署教程：
 
