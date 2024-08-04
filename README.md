@@ -21,6 +21,8 @@ Telegram频道：https://t.me/AM_CLUBS
 - 2、然后在左边栏点击 Additonal services ,接着点击 Run your own applications 看到一个 Enable 点击
 - 3、找到 Port reservation 点击后面的 Add Port 新开一个端口，随便写，也可以点击 Port后面的 Random随机选择Port tybe 选择 TCP
 - 4、然后点击 Port list 你会看到一个端口
+  <img width="1264" alt="socks5-1" src="https://github.com/user-attachments/assets/3ceba2fa-a03f-416a-ba4d-5b86288f9561">
+
 - 5、 启用管理权限：
 <img width="719" alt="serv00" src="https://github.com/user-attachments/assets/48466f3a-1b75-4cf3-8dd9-7c2e440b73fe">
 
@@ -83,5 +85,5 @@ pm2 unstartup && pm2 delete all && npm uninstall -g pm2
 ```
 ----
 
-致谢：RealNeoMan、cmliu
+致谢：RealNeoMan、eooce、cmliu
 
