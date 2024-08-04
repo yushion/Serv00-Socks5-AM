@@ -74,12 +74,12 @@ EOF
 install_socks5(){
   socks5_config
   if [ ! -e "${FILE_PATH}/s5" ]; then
-    curl -L -sS -o "${FILE_PATH}/s5" "https://github.com/eooce/test/releases/download/freebsd/web"
+    curl -L -sS -o "${FILE_PATH}/s5" "https://github.com/ansoncloud8/socks5-script/releases/download/freebsd/web"
   else
     read -p "socks5 程序已存在，是否重新下载覆盖？(Y/N 回车N)" downsocks5
     downsocks5=${downsocks5^^} # 转换为大写
     if [ "$downsocks5" == "Y" ]; then
-      curl -L -sS -o "${FILE_PATH}/s5" "https://github.com/eooce/test/releases/download/freebsd/web"
+      curl -L -sS -o "${FILE_PATH}/s5" "https://github.com/ansoncloud8/socks5-script/releases/download/freebsd/web"
     else
       echo "使用已存在的 socks5 程序"
     fi
