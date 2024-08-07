@@ -60,7 +60,7 @@ crontab定时任务(建议添加,填Y)
 
 成功运行并启动socks5代理后，脚本会提示“代理工作正常，脚本结束“
 
-4、查看保活crontab任务
+- 4、查看保活crontab任务
 ```
 crontab -l
 ```
@@ -70,6 +70,12 @@ crontab -l
 @reboot pkill -kill -u <username> && nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 & && nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &
 */12 * * * * pgrep -x "nezha-agent" > /dev/null || nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &
 */12 * * * * pgrep -x "s5" > /dev/null || nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &
+```
+
+- 5、socks5卸载命令(卸载完就执行第2步的安装命令重新安装)
+```
+pgrep -f 's5' | xargs -r kill
+rm -rf ~/.s5
 ```
 
 ## 其它说明：
