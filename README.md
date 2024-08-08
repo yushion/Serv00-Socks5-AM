@@ -78,17 +78,17 @@ crontab -l
 */12 * * * * pgrep -x "s5" > /dev/null || nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &
 ```
 如果没有保活设置成功可以执行下面命令
-- 重启机保活（**命令中的\<username\>要换成你的登录名**）
+- 重启机保活
 ```
-(crontab -l; echo "@reboot pkill -kill -u <username> && nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 & && nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &") | crontab -
+(crontab -l; echo "@reboot pkill -kill -u <username> && nohup /home/${USER}/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 & && nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &") | crontab -
 ```
-- nezha-agent保活（**命令中的\<username\>要换成你的登录名**）
+- nezha-agent保活
 ```
-(crontab -l; echo "*/12 * * * * pgrep -x "nezha-agent" > /dev/null || nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &") | crontab -
+(crontab -l; echo "*/12 * * * * pgrep -x "nezha-agent" > /dev/null || nohup /home/${USER}/.nezha-agent/start.sh >/dev/null 2>&1 &") | crontab -
 ```
-s5保活（**命令中的\<username\>要换成你的登录名**）
+s5保活
 ```
-(crontab -l; echo "*/12 * * * * pgrep -x "s5" > /dev/null || nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &") | crontab -
+(crontab -l; echo "*/12 * * * * pgrep -x "s5" > /dev/null || nohup /home/${USER}/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &") | crontab -
 ```
 
 
