@@ -77,6 +77,20 @@ crontab -l
 */12 * * * * pgrep -x "nezha-agent" > /dev/null || nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &
 */12 * * * * pgrep -x "s5" > /dev/null || nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &
 ```
+如果没有保活设置成功可以执行下面命令
+- 重启机保活
+```
+(crontab -l; echo "@reboot pkill -kill -u <username> && nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 & && nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &") | crontab -
+```
+- nezha-agent保活
+```
+(crontab -l; echo "*/12 * * * * pgrep -x "nezha-agent" > /dev/null || nohup /home/<username>/.nezha-agent/start.sh >/dev/null 2>&1 &") | crontab -
+```
+- s5保活
+```
+(crontab -l; echo "*/12 * * * * pgrep -x "s5" > /dev/null || nohup /home/<username>/.s5/s5 -c /home/<username>/.s5/config.json >/dev/null 2>&1 &") | crontab -
+```
+
 
 - 5、socks5卸载命令(卸载完就执行第2步的安装命令重新安装)
 ```
@@ -86,7 +100,7 @@ rm -rf ~/.s5
 
 ## 其它说明：
 ----
-### ~pm2模式~
+### ~pm2模式(不推荐)~
 - ~一键安装~
 
 ~`bash <(curl -s https://raw.githubusercontent.com/ansoncloud8/am-serv00-socks5/install-socks5-pm2.sh)`~
