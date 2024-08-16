@@ -44,20 +44,14 @@ done
   },
   "inbounds": [
     {
-      "port": "$SOCKS5_PORT",
+      "port": "12353",
       "protocol": "socks",
       "tag": "socks",
       "settings": {
-        "auth": "password",
+        "auth": "noauth",
         "udp": false,
         "ip": "0.0.0.0",
-        "userLevel": 0,
-        "accounts": [
-          {
-            "user": "$SOCKS5_USER",
-            "pass": "$SOCKS5_PASS"
-          }
-        ]
+        "userLevel": 0
       }
     }
   ],
