@@ -21,19 +21,6 @@ socks5_config(){
 # 提示用户输入socks5端口号
 read -p "请输入socks5端口号: " SOCKS5_PORT
 
-# 提示用户输入用户名和密码
-read -p "请输入socks5用户名: " SOCKS5_USER
-
-while true; do
-  read -p "请输入socks5密码（不能包含@和:）：" SOCKS5_PASS
-  echo
-  if [[ "$SOCKS5_PASS" == *"@"* || "$SOCKS5_PASS" == *":"* ]]; then
-    echo "密码中不能包含@和:符号，请重新输入。"
-  else
-    break
-  fi
-done
-
 # config.js文件
   cat > ${FILE_PATH}/config.json << EOF
 {
@@ -84,10 +71,10 @@ install_socks5(){
     nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &
 	  sleep 2
     pgrep -x "s5" > /dev/null && echo -e "\e[1;32ms5 is running\e[0m" || { echo -e "\e[1;35ms5 is not running, restarting...\e[0m"; pkill -x "s5" && nohup "${FILE_PATH}/s5" -c ${FILE_PATH}/config.json >/dev/null 2>&1 & sleep 2; echo -e "\e[1;32ms5 restarted\e[0m"; }
-    CURL_OUTPUT=$(curl -s ip.sb --socks5 $SOCKS5_USER:$SOCKS5_PASS@localhost:$SOCKS5_PORT)
+    CURL_OUTPUT=$(curl -s ip.sb --socks5 localhost:$SOCKS5_PORT)
     if [[ $CURL_OUTPUT =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
       echo "代理创建成功，返回的IP是: $CURL_OUTPUT"
-      echo "socks://${SOCKS5_USER}:${SOCKS5_PASS}@${CURL_OUTPUT}:${SOCKS5_PORT}"
+      echo "socks://${CURL_OUTPUT}:${SOCKS5_PORT}"
     else
       echo "代理创建失败，请检查自己输入的内容。"
     fi
