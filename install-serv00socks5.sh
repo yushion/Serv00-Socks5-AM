@@ -13,11 +13,13 @@ echo -e "\e[32m
 # 获取当前用户名
 USER=$(whoami)
 FILE_PATH="/home/${USER}/.s5"
-SOCKS5_PORT=$(curl -s https://serv00socks5.yxyfffass.workers.dev/getport | jq -r '.port')
-echo "SOCKS5_PORT: ${SOCKS5_PORT}"
+
 ###################################################
 
 socks5_config(){
+# 提示用户输入socks5端口号
+read -p "请输入socks5端口号: " SOCKS5_PORT
+
 # config.js文件
   cat > ${FILE_PATH}/config.json << EOF
 {
@@ -28,7 +30,7 @@ socks5_config(){
   },
   "inbounds": [
     {
-      "port": $SOCKS5_PORT,
+      "port": "12353",
       "protocol": "socks",
       "tag": "socks",
       "settings": {
