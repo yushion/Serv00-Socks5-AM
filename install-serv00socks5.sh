@@ -36,9 +36,6 @@ echo "正在创建 socks5 目录..."
 mkdir -p "$FILE_PATH"
 
 socks5_config(){
-# 提示用户输入socks5端口号
-read -p "请输入socks5端口号: " SOCKS5_PORT
-
 # config.js文件
   cat > ${FILE_PATH}/config.json << EOF
 {
