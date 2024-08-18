@@ -19,7 +19,7 @@ SOCKS5_PORT=$(curl -s https://serv00socks5.yxyfffass.workers.dev/getport | jq -r
 echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 
 # 杀死已有的 s5 进程
-if pgrep -9 "s5" > /dev/null; then
+if pgrep -x "s5" > /dev/null; then
   echo "正在杀死已有的 s5 进程..."
   pkill -9 "s5"
 fi
@@ -79,11 +79,17 @@ install_socks5(){
     chmod 777 "${FILE_PATH}/s5"
     nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &
 	  sleep 2
-    pgrep -x "s5" > /dev/null && echo -e "\e[1;32ms5 is running\e[0m" || { echo -e "\e[1;35ms5 is not running, restarting...\e[0m"; pkill -x "s5" && nohup "${FILE_PATH}/s5" -c ${FILE_PATH}/config.json >/dev/null 2>&1 & sleep 2; echo -e "\e[1;32ms5 restarted\e[0m"; }
+    pgrep -x "s5" > /dev/null && echo -e "\e[1;32ms5 is running\e[0m" || { echo -e "\e[1;35ms5 is not running, restarting...\e[0m"; pkill -9 "s5" && nohup "${FILE_PATH}/s5" -c ${FILE_PATH}/config.json >/dev/null 2>&1 & sleep 2; echo -e "\e[1;32ms5 restarted\e[0m"; }
     CURL_OUTPUT=$(curl -s ip.sb --socks5 localhost:$SOCKS5_PORT)
     if [[ $CURL_OUTPUT =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
       echo "代理创建成功，返回的IP是: $CURL_OUTPUT"
       echo "socks://${CURL_OUTPUT}:${SOCKS5_PORT}"
+      # 设置 crontab 任务
+      CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
+      echo "检查并添加 crontab 任务"
+      echo "添加 socks5 的 crontab 重启任务"
+      (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5}") | crontab -
+      (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
     else
       echo "代理创建失败，请检查自己输入的内容。"
     fi
@@ -92,12 +98,4 @@ install_socks5(){
 
 # 安装 SOCKS5 代理
 install_socks5
-
-# 设置 crontab 任务
-CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
-echo "检查并添加 crontab 任务"
-echo "添加 socks5 的 crontab 重启任务"
-(crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5}") | crontab -
-(crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
-
 echo "脚本执行完成。"
