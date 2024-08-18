@@ -46,7 +46,7 @@ socks5_config(){
   },
   "inbounds": [
     {
-      "port": "${SOCKS5_PORT}",
+      "port": $SOCKS5_PORT,
       "protocol": "socks",
       "tag": "socks",
       "settings": {
