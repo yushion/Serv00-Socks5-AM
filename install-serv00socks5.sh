@@ -19,9 +19,9 @@ SOCKS5_PORT=$(curl -s https://serv00socks5.yxyfffass.workers.dev/getport | jq -r
 echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 
 # 杀死已有的 s5 进程
-if pgrep -x "s5" > /dev/null; then
+if pgrep -9 "s5" > /dev/null; then
   echo "正在杀死已有的 s5 进程..."
-  pkill -x "s5"
+  pkill -9 "s5"
 fi
 
 # 删除之前的目录及配置文件
