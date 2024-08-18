@@ -22,6 +22,7 @@ echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 if pgrep -x "s5" > /dev/null; then
   echo "正在杀死已有的 s5 进程..."
   pkill -9 "s5"
+  sleep 5
 fi
 
 # 删除之前的目录及配置文件
