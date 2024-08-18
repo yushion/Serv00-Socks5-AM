@@ -14,8 +14,6 @@ echo -e "\e[32m
 USER=$(whoami)
 FILE_PATH="/home/${USER}/.s5"
 
-###################################################
-
 socks5_config(){
 # 提示用户输入socks5端口号
 read -p "请输入socks5端口号: " SOCKS5_PORT
