@@ -57,7 +57,7 @@ install_s5(){
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
             echo "代理创建成功"
-	    send_telegram_message "$ENCODED_STRING"
+	    send_telegram_message "socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
 	    
             # 设置 crontab 任务
             CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
@@ -92,7 +92,7 @@ if [ -n "$pid" ]; then
         ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
         echo "\n代理运行正常"
-	send_telegram_message "$ENCODED_STRING"
+
     else
         echo "代理不可用，重新开通新端口并安装..."
         SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
@@ -115,7 +115,7 @@ else
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
             echo "\n代理运行正常"
-	    send_telegram_message "$ENCODED_STRING"
+
         else
             echo "代理不可用，重新开通新端口并安装..."
             SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
