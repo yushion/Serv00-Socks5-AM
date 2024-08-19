@@ -56,7 +56,7 @@ install_s5(){
 	    DECODED_STRING="socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
-            curl -s "http://ssh.auto.cloudns.ch/setsocks5??user=[username]&socks5=$ENCODED_STRING"
+            curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$ENCODED_STRING"
             echo "\n代理创建成功\n"
 	    send_telegram_message "$DECODED_STRING"
      	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS5_IP:$SOCKS5_PORT"
