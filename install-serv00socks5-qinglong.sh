@@ -57,6 +57,7 @@ install_s5(){
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
             echo "代理创建成功"
+	    send_telegram_message "$ENCODED_STRING"
 	    
             # 设置 crontab 任务
             CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
@@ -70,6 +71,17 @@ install_s5(){
     fi
 }
 
+send_telegram_message() {
+  local TELEGRAM_BOT_TOKEN="你的TelegramBotToken"
+  local TELEGRAM_CHAT_ID="你的TelegramChatID"
+  local MESSAGE="$1"
+
+  # 发送消息
+  curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+      -H "Content-Type: application/json" \
+      -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"text\":\"$MESSAGE\"}"
+}
+
 pid=$(pgrep -x "s5")
 if [ -n "$pid" ]; then
     echo "'s5' 进程存在，PID: $pid"
@@ -80,6 +92,7 @@ if [ -n "$pid" ]; then
         ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
         echo "\n代理运行正常"
+	send_telegram_message "$ENCODED_STRING"
     else
         echo "代理不可用，重新开通新端口并安装..."
         SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
@@ -102,6 +115,7 @@ else
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
             echo "\n代理运行正常"
+	    send_telegram_message "$ENCODED_STRING"
         else
             echo "代理不可用，重新开通新端口并安装..."
             SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
