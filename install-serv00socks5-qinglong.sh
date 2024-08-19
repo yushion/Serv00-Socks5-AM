@@ -57,7 +57,7 @@ install_s5(){
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
-            echo "代理创建成功"
+            echo "\n代理创建成功\n"
 	    send_telegram_message "$DECODED_STRING"
      	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:socks&desp=$ENCODED_STRING"
 	    
@@ -94,7 +94,7 @@ if [ -n "$pid" ]; then
 	ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
-        echo "\n代理运行正常"
+        echo "\n代理运行正常\n"
 	curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:socks&desp=$ENCODED_STRING"
 
     else
@@ -119,7 +119,7 @@ else
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
-            echo "\n代理运行正常"
+            echo "\n代理运行正常\n"
 	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:socks&desp=$ENCODED_STRING"
 
         else
