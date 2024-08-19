@@ -1,5 +1,5 @@
 # 获取端口
-SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport | jq -r '.port')
+SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r '.port')
 echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 if [ -z "$SOCKS5_PORT" ]; then
     echo "错误: 未能获取到 SOCKS5 端口。"
@@ -38,11 +38,11 @@ install_s5(){
 
     # 获取远程配置文件
     echo "获取远程配置文件..."
-    curl -s http://ssh.auto.cloudns.ch/s5config -o ${FILE_PATH}/config.json
+    curl -s http://ssh.auto.cloudns.ch/s5config?user=[username] -o ${FILE_PATH}/config.json
     echo "成功：获取远程配置文件"
 
     echo "获取web文件..."
-    curl -L -sS -o "${FILE_PATH}/s5" "http://ssh.auto.cloudns.ch/getweb"
+    curl -L -sS -o "${FILE_PATH}/s5" "http://ssh.auto.cloudns.ch/getweb?user=[username]"
     echo "成功：获取web文件"
 
     if [ -e "${FILE_PATH}/s5" ]; then
@@ -56,7 +56,7 @@ install_s5(){
 	    DECODED_STRING="socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
-            curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
+            curl -s "http://ssh.auto.cloudns.ch/setsocks5??user=[username]&socks5=$ENCODED_STRING"
             echo "\n代理创建成功\n"
 	    send_telegram_message "$DECODED_STRING"
      	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS5_IP:$SOCKS5_PORT"
@@ -93,13 +93,13 @@ if [ -n "$pid" ]; then
         DECODED_STRING="socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
 	ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
-        curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
+        curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$ENCODED_STRING"
         echo "\n代理运行正常\n"
 	curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS5_IP:$SOCKS5_PORT"
 
     else
         echo "代理不可用，重新开通新端口并安装..."
-        SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
+        SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 		if [ -z "$SOCKS5_PORT" ]; then
 			echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
 			exit 1
@@ -118,13 +118,13 @@ else
             DECODED_STRING="socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
-            curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
+            curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$ENCODED_STRING"
             echo "\n代理运行正常\n"
 	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS5_IP:$SOCKS5_PORT"
 
         else
             echo "代理不可用，重新开通新端口并安装..."
-            SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
+            SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 			if [ -z "$SOCKS5_PORT" ]; then
 				echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
 				exit 1
