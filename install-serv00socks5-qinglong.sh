@@ -55,12 +55,9 @@ install_s5(){
         if [[ $SOCKS5_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             ENCODED_STRING=$(echo -n "socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT\\nhttps://t.me/socks?server=vmess.mic.x10.mx&port=$SOCKS5_PORT" | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
-            echo "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
-
-            echo "代理创建成功，返回的IP是: $SOCKS5_IP"
-            echo "socks://$SOCKS5_IP:$SOCKS5_PORT"
-            
+            echo "代理创建成功"
+	    
             # 设置 crontab 任务
             CRON_S5="nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
             echo "检查并添加 crontab 任务"
@@ -68,7 +65,7 @@ install_s5(){
             (crontab -l | grep -F "@reboot pkill -KILL -u $(whoami) && ${CRON_S5}") || (crontab -l; echo "@reboot pkill -KILL -u $(whoami) && ${CRON_S5}") | crontab -
             (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
         else
-            echo "代理创建失败，请检查自己输入的内容。"
+            echo "代理创建失败，请检查。"
         fi
     fi
 }
@@ -82,7 +79,7 @@ if [ -n "$pid" ]; then
         ENCODED_STRING=$(echo -n "socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT\\nhttps://t.me/socks?server=vmess.mic.x10.mx&port=$SOCKS5_PORT" | jq -sRr @uri)
         ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
-        echo "检测到代理正常运行，返回的IP是: $SOCKS5_IP"
+        echo "\n代理运行正常"
     else
         echo "代理不可用，重新开通新端口并安装..."
         SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
@@ -104,7 +101,7 @@ else
             ENCODED_STRING=$(echo -n "socks://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT\\nhttps://t.me/socks?server=vmess.mic.x10.mx&port=$SOCKS5_PORT" | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
-            echo "检测到代理正常运行，返回的IP是: $SOCKS5_IP"
+            echo "\n代理运行正常"
         else
             echo "代理不可用，重新开通新端口并安装..."
             SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction | jq -r '.port')  # 重新开通新端口
