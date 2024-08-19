@@ -94,7 +94,6 @@ if [ -n "$pid" ]; then
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
         echo "\n代理运行正常"
-	send_telegram_message "$DECODED_STRING"
 
     else
         echo "代理不可用，重新开通新端口并安装..."
@@ -119,7 +118,6 @@ else
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?socks5=$ENCODED_STRING"
             echo "\n代理运行正常"
-	    send_telegram_message "$DECODED_STRING"
 
         else
             echo "代理不可用，重新开通新端口并安装..."
