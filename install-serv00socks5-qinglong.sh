@@ -72,8 +72,8 @@ install_s5(){
 }
 
 send_telegram_message() {
-  local TELEGRAM_BOT_TOKEN="你的TelegramBotToken"
-  local TELEGRAM_CHAT_ID="你的TelegramChatID"
+  local TELEGRAM_BOT_TOKEN="[TelegramBotToken]"
+  local TELEGRAM_CHAT_ID="[TelegramChatID]"
   local MESSAGE="$1"
 
   # 发送消息
