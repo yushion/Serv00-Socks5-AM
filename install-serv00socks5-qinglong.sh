@@ -3,6 +3,7 @@ SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r
 echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 if [ -z "$SOCKS5_PORT" ]; then
 	SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
+	echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 	if [ -z "$SOCKS5_PORT" ]; then
 		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
 		exit 1
