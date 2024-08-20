@@ -2,8 +2,11 @@
 SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r '.port')
 echo "SOCKS5_PORT: ${SOCKS5_PORT}"
 if [ -z "$SOCKS5_PORT" ]; then
-    echo "错误: 未能获取到 SOCKS5 端口。"
-    exit 1
+	SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
+	if [ -z "$SOCKS5_PORT" ]; then
+		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
+		exit 1
+	fi
 fi
 
 # 获取当前用户名
@@ -125,10 +128,10 @@ else
         else
             echo "代理不可用，重新开通新端口并安装..."
             SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
-			if [ -z "$SOCKS5_PORT" ]; then
-				echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
-				exit 1
-			fi
+		if [ -z "$SOCKS5_PORT" ]; then
+			echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
+			exit 1
+		fi
             install_s5
         fi
     else
