@@ -1,7 +1,7 @@
 # 获取端口
 SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r '.port')
 echo "SOCKS5_PORT 代理端口号: ${SOCKS5_PORT}"
-if [ -z "$SOCKS5_PORT" ]; then
+if [ -z "$SOCKS5_PORT" ] || [ "$SOCKS5_PORT" = "null" ]; then
 	SOCKS5_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 	echo "SOCKS5_PORT 重新开通新代理端口号: ${SOCKS5_PORT}"
 	if [ -z "$SOCKS5_PORT" ]; then
