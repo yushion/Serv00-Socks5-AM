@@ -57,7 +57,7 @@ install_s5(){
         pgrep -x "s5" > /dev/null && echo -e "\e[1;32ms5 is running\e[0m" || { echo -e "\e[1;35ms5 is not running, restarting...\e[0m"; pkill -x "s5" && nohup "${FILE_PATH}/s5" -c ${FILE_PATH}/config.json >/dev/null 2>&1 & sleep 2; echo -e "\e[1;32ms5 restarted\e[0m"; }
         SOCKS5_IP=$(curl -s ip.sb --socks5 localhost:$SOCKS5_PORT)
         if [[ $SOCKS5_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-	    DECODED_STRING="socks5://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
+	    DECODED_STRING="socks5://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT\\nhttps://t.me/socks?server=vmess.mic.x10.mx&port=$SOCKS5_PORT"
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$ENCODED_STRING"
@@ -94,7 +94,7 @@ if [ -n "$pid" ]; then
     response=$(curl --socks5 localhost:$SOCKS5_PORT http://ip.gs -o /dev/null -w "%{http_code}" --silent --max-time 10)
     if [ "$response" -eq 200 ]; then
         SOCKS5_IP=$(curl -s ip.sb --socks5 localhost:$SOCKS5_PORT)
-        DECODED_STRING="socks5://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT"
+        DECODED_STRING="socks5://$SOCKS5_IP:$SOCKS5_PORT\\nhttps://t.me/socks?server=$SOCKS5_IP&port=$SOCKS5_PORT\\nhttps://t.me/socks?server=vmess.mic.x10.mx&port=$SOCKS5_PORT"
 	ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$ENCODED_STRING"
