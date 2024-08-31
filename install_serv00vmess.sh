@@ -169,6 +169,17 @@ GeneratingFiles_Config() {
 EOF
 }
 
+# 获取端口
+VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=louwen | jq -r '.port')
+echo "VMESS_PORT 代理端口号: ${VMESS_PORT}"
+if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
+	VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=louwen | jq -r '.port')  # 重新开通新端口
+	echo "VMESS_PORT 重新开通新代理端口号: ${VMESS_PORT}"
+	if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
+		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
+		exit 1
+	fi
+fi
 VMESS_PORT="43169"
 UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
 ARGO_DOMAIN="vmess.mic.x10.mx"
