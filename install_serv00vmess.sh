@@ -60,10 +60,10 @@ GeneratingFiles_Config() {
       "tag": "vmess-ws-in",
       "type": "vmess",
       "listen": "::",
-      "listen_port": $VMESS_PORT,
+      "listen_port": ${VMESS_PORT},
       "users": [
       {
-        "uuid": "$UUID"
+        "uuid": "${UUID}"
       }
     ],
     "transport": {
