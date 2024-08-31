@@ -216,7 +216,8 @@ echo $IP;
 sleep 1
 
 # get ipinfo
-ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country,.city')
+ISP=$(curl -s https://speed.cloudflare.com/meta | awk -F\" '{print $26"-"$18}' | sed -e 's/ /_/g') 
+# ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country,.city')
 echo $ISP;
 sleep 1
 
