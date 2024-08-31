@@ -201,24 +201,27 @@ if [ -z "$pid" ]; then
 	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
 fi
 
+GeneratingFiles_List(){
+# get ip
+IP=$(curl -s ipv4.ip.sb || { ipv6=$(curl -s --max-time 1 ipv6.ip.sb); echo "[$ipv6]"; })
+sleep 1
+# get ipinfo
+ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country, .city')
+sleep 1
+cat > list.txt <<EOF
+vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${ISP}\", \"add\": \"${IP}\", \"port\": \"${VMESS_PORT}\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
+
+vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${ISP}\", \"add\": \"www.visa.com\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
+
+EOF
+}
 pid=$(pgrep -x "web")
 if [ -n "$pid" ]; then
 	pid=$(pgrep -x "cftunnel")
 	if [ -n "$pid" ]; then
  		sleep 1
-		# get ip
-		IP=$(curl -s ipv4.ip.sb || { ipv6=$(curl -s --max-time 1 ipv6.ip.sb); echo "[$ipv6]"; })
-		sleep 1
-		# get ipinfo
-		ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country, .city')
-		sleep 1
-
-		cat > list.txt <<EOF
-		vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${ISP}\", \"add\": \"${IP}\", \"port\": \"${VMESS_PORT}\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
-		
-		vmess://$(echo "{ \"v\": \"2\", \"ps\": \"${ISP}\", \"add\": \"www.visa.com\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
-		
-		EOF
+   		GeneratingFiles_List
+     
 		cat list.txt
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
