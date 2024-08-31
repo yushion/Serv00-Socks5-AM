@@ -183,8 +183,10 @@ cd $WORKDIR
 
 pid=$(pgrep -x "web")
 if [ -z "$pid" ]; then
-	wget -q -O "${WORKDIR}/web" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-web"
-	chmod 777 "${WORKDIR}/web"
+	if [ ! -f "${WORKDIR}/web" ]; then
+		wget -q -O "${WORKDIR}/web" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-web"
+	fi
+ 	chmod 777 "${WORKDIR}/web"
 	GeneratingFiles_Config
 	nohup ${WORKDIR}/web run -c config.json >/dev/null 2>&1 &
 	sleep 2
@@ -193,9 +195,11 @@ fi
 
 pid=$(pgrep -x "cftunnel")
 if [ -z "$pid" ]; then
-	wget -q -O "${WORKDIR}/cftunnel" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-bot"
-	chmod 777 "${WORKDIR}/cftunnel"
-	
+	if [ ! -f "${WORKDIR}/web" ]; then
+		wget -q -O "${WORKDIR}/cftunnel" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-bot"
+		
+	fi
+ 	chmod 777 "${WORKDIR}/cftunnel"	
 	nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 &
 	sleep 2
 	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
