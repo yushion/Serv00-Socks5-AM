@@ -14,7 +14,10 @@ reading() { read -p "$(red "$1")" "$2"; }
 
 USERNAME=$(whoami)
 HOSTNAME=$(hostname)
-export UUID=${UUID:-'1f32fe97-ef35-404a-b22b-29edf72f03cf'}
+export UUID=${UUID:-'d36c4d9f-31c4-45f1-8c64-102a6142001e'}
+export NEZHA_SERVER=${NEZHA_SERVER:-''} 
+export NEZHA_PORT=${NEZHA_PORT:-'5555'}     
+export NEZHA_KEY=${NEZHA_KEY:-''} 
 export ARGO_DOMAIN=${ARGO_DOMAIN:-''}   
 export ARGO_AUTH=${ARGO_AUTH:-''} 
 
@@ -33,6 +36,24 @@ read_vmess_port() {
     done
 }
 
+read_nz_variables() {
+  if [ -n "$NEZHA_SERVER" ] && [ -n "$NEZHA_PORT" ] && [ -n "$NEZHA_KEY" ]; then
+      green "使用自定义变量哪吒运行哪吒探针"
+      return
+  else
+      reading "是否需要安装哪吒探针？【y/n】: " nz_choice
+      [[ -z $nz_choice ]] && return
+      [[ "$nz_choice" != "y" && "$nz_choice" != "Y" ]] && return
+      reading "请输入哪吒探针域名或ip：" NEZHA_SERVER
+      green "你的哪吒域名为: $NEZHA_SERVER"
+      reading "请输入哪吒探针端口（回车跳过默认使用5555）：" NEZHA_PORT
+      [[ -z $NEZHA_PORT ]] && NEZHA_PORT="5555"
+      green "你的哪吒端口为: $NEZHA_PORT"
+      reading "请输入哪吒探针密钥：" NEZHA_KEY
+      green "你的哪吒密钥为: $NEZHA_KEY"
+  fi
+}
+
 install_singbox() {
 echo -e "${yellow}本脚本安装vmess协议${purple}(vmess-ws)${re}"
 echo -e "${yellow}开始运行前，请确保在面板${purple}已开放1个tcp端口${re}"
@@ -41,6 +62,7 @@ reading "\n确定继续安装吗？【y/n】: " choice
   case "$choice" in
     [Yy])
         cd $WORKDIR
+        # read_nz_variables
         read_vmess_port
 	argo_configure
         generate_config
@@ -158,6 +180,8 @@ download_singbox() {
       if [ -e "$FILENAME" ]; then
           green "$FILENAME already exists, Skipping download"
       else
+      	  echo "$FILENAME"
+	  echo "$URL"
           wget -q -O "$FILENAME" "$URL"
           green "Downloading $FILENAME"
       fi
@@ -325,6 +349,23 @@ EOF
 
 # running files
 run_sb() {
+  if [ -e npm ]; then
+    tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
+    if [[ "${tlsPorts[*]}" =~ "${NEZHA_PORT}" ]]; then
+      NEZHA_TLS="--tls"
+    else
+      NEZHA_TLS=""
+    fi
+    if [ -n "$NEZHA_SERVER" ] && [ -n "$NEZHA_PORT" ] && [ -n "$NEZHA_KEY" ]; then
+        export TMPDIR=$(pwd)
+        nohup ./npm -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
+	sleep 2
+        pgrep -x "npm" > /dev/null && green "npm is running" || { red "npm is not running, restarting..."; pkill -x "npm" && nohup ./npm -s "${NEZHA_SERVER}:${NEZHA_PORT}" -p "${NEZHA_KEY}" ${NEZHA_TLS} >/dev/null 2>&1 & sleep 2; purple "npm restarted"; }
+    else
+        purple "NEZHA variable is empty,skiping runing"
+    fi
+  fi
+
   if [ -e web ]; then
     nohup ./web run -c config.json >/dev/null 2>&1 &
     sleep 2
@@ -339,6 +380,7 @@ run_sb() {
     else
       args="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --logfile boot.log --loglevel info --url http://localhost:$vmess_port"
     fi
+    echo "$args"
     nohup ./bot $args >/dev/null 2>&1 &
     sleep 2
     pgrep -x "bot" > /dev/null && green "bot is running" || { red "bot is not running, restarting..."; pkill -x "bot" && nohup ./bot "${args}" >/dev/null 2>&1 & sleep 2; purple "bot restarted"; }
@@ -383,6 +425,15 @@ sleep 3
 menu() {
    clear
    echo ""
+   purple "=== serv00 | AM科技 vmess一键安装脚本 ===\n"
+   echo -e "${green}脚本地址：${re}${yellow}https://github.com/eooce/Sing-box${re}\n"
+   echo -e "${green}反馈论坛：${re}${yellow}https://bbs.vps8.me${re}\n"
+   echo -e "${green}TG反馈群组：${re}${yellow}https://t.me/vps888${re}\n"
+   purple "根据老王脚本魔改简化版本，转载请著名出处，请勿滥用\n"
+   echo -e "${green}脚本地址：${re}${yellow}https://github.com/amclubs/am-serv00-vmess${re}\n"
+   echo -e "${green}博客：${re}${yellow}https://am.809098.xyz${re}\n"
+   echo -e "${green}TG反馈群组：${re}${yellow}https://t.me/AM_CLUBS${re}\n"
+   purple "根据老王脚本魔改简化版本，转载请著名出处，请勿滥用\n"
    green "1. 安装sing-box"
    echo  "==============="
    red "2. 卸载sing-box"
