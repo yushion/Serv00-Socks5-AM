@@ -228,7 +228,6 @@ sleep 1
 # get ipinfo
 # ISP=$(curl -s https://speed.cloudflare.com/meta | awk -F\" '{print $26"_"$30}' | sed -e 's/ /_/g') 
 ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '"\(.country)_\(.city)"')
-echo $ISP;
 sleep 1
 
 cat > list.txt <<EOF
@@ -250,7 +249,6 @@ if [ -n "$pid" ]; then
    		GeneratingFiles_List
      
 		vmessList=$(cat ${WORKDIR}/list.txt)
-		echo "$vmessList"
 		vmessList=$(jq -sRr @uri <<< "$vmessList")
 		vmessList=$(sed 's/%5Cn/%0A/g' <<< "$vmessList")
   		curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$vmessList"
