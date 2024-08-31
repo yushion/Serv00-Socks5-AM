@@ -170,10 +170,10 @@ EOF
 }
 
 # 获取端口
-VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=louwen | jq -r '.port')
+VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r '.port')
 echo "VMESS_PORT 代理端口号: ${VMESS_PORT}"
 if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
-	VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=louwen | jq -r '.port')  # 重新开通新端口
+	VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 	echo "VMESS_PORT 重新开通新代理端口号: ${VMESS_PORT}"
 	if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
 		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
@@ -226,8 +226,8 @@ echo $IP;
 sleep 1
 
 # get ipinfo
-ISP=$(curl -s https://speed.cloudflare.com/meta | awk -F\" '{print $26"_"$30}' | sed -e 's/ /_/g') 
-# ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '"\(.country)_\(.city)"')
+# ISP=$(curl -s https://speed.cloudflare.com/meta | awk -F\" '{print $26"_"$30}' | sed -e 's/ /_/g') 
+ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '"\(.country)_\(.city)"')
 echo $ISP;
 sleep 1
 
