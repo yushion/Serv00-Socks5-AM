@@ -173,6 +173,7 @@ VMESS_PORT="43169"
 UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
 ARGO_DOMAIN="vmess.mic.x10.mx"
 ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
+CF_TUNNEL = "tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token $ARGO_AUTH"
 
 USER=$(whoami)
 WORKDIR="/home/${USER}/.vmess"
@@ -195,10 +196,9 @@ if [ -z "$pid" ]; then
 	wget -q -O "${WORKDIR}/cftunnel" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-bot"
 	chmod 777 "${WORKDIR}/cftunnel"
 	
-	tunnel = "tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token $ARGO_AUTH"
-	nohup ${WORKDIR}/cftunnel "${tunnel}" >/dev/null 2>&1 &
+	nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 &
 	sleep 2
-	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${tunnel}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
+	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
 fi
 
 pid=$(pgrep -x "web")
