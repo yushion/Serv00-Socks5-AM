@@ -211,7 +211,7 @@ IP=$(curl -s ipv4.ip.sb || { ipv6=$(curl -s --max-time 1 ipv6.ip.sb); echo "[$ip
 
 sleep 1
 # get ipinfo
-ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country, .city')
+ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country,.city')
 
 sleep 1
 cat > list.txt <<EOF
