@@ -12,69 +12,6 @@ yellow() { echo -e "\e[1;33m$1\033[0m"; }
 purple() { echo -e "\e[1;35m$1\033[0m"; }
 reading() { read -p "$(red "$1")" "$2"; }
 
-VMESS_PORT="43169"
-UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
-ARGO_DOMAIN="vmess.mic.x10.mx"
-ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
-
-USER=$(whoami)
-WORKDIR="/home/${USER}/.vmess"
-mkdir -p "$WORKDIR"
-chmod 777 "$WORKDIR"
-cd $WORKDIR
-
-pid=$(pgrep -x "web")
-if [ -z "$pid" ]; then
-	wget -q -O "${WORKDIR}/web" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-web"
-	chmod 777 "${WORKDIR}/web"
-	GeneratingFiles_Config
-	nohup ${WORKDIR}/web run -c config.json >/dev/null 2>&1 &
-	sleep 2
-	pgrep -x "web" > /dev/null && green "web is running" || { red "web is not running, restarting..."; pkill -x "web" && nohup ./web run -c config.json >/dev/null 2>&1 & sleep 2; purple "web restarted"; }
-fi
-
-pid=$(pgrep -x "cftunnel")
-if [ -z "$pid" ]; then
-	wget -q -O "${WORKDIR}/cftunnel" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-bot"
-	chmod 777 "${WORKDIR}/cftunnel"
-	
-	$tunnel = "tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token $ARGO_AUTH"
-	nohup ${WORKDIR}/cftunnel "${tunnel}" >/dev/null 2>&1 &
-	sleep 2
-	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${tunnel}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
-fi
-
-pid=$(pgrep -x "web")
-if [ -n "$pid" ]; then
-	pid=$(pgrep -x "cftunnel")
-	if [ -n "$pid" ]; then
- 		sleep 1
-		# get ip
-		IP=$(curl -s ipv4.ip.sb || { ipv6=$(curl -s --max-time 1 ipv6.ip.sb); echo "[$ipv6]"; })
-		sleep 1
-		# get ipinfo
-		ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country, .city')
-		sleep 1
-
-		cat > list.txt <<EOF
-		vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"$IP\", \"port\": \"$VMESS_PORT\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
-		
-		vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"www.visa.com\", \"port\": \"443\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$ARGO_DOMAIN\", \"path\": \"/vmess?ed=2048\", \"tls\": \"tls\", \"sni\": \"$ARGO_DOMAIN\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
-		
-		EOF
-		cat list.txt
-		purple "list.txt saved successfully, Running done!"
-		sleep 3 
-	else
- 		red "cftunnel is not running, restarting...";
-	fi
-else
-	red "web is not running, restarting...";
-fi
-
-
-
-
 # Generating Configuration Files
 GeneratingFiles_Config() {
   cat > config.json << EOF
@@ -232,3 +169,63 @@ GeneratingFiles_Config() {
 EOF
 }
 
+
+VMESS_PORT="43169"
+UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
+ARGO_DOMAIN="vmess.mic.x10.mx"
+ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
+
+USER=$(whoami)
+WORKDIR="/home/${USER}/.vmess"
+mkdir -p "$WORKDIR"
+chmod 777 "$WORKDIR"
+cd $WORKDIR
+
+pid=$(pgrep -x "web")
+if [ -z "$pid" ]; then
+	wget -q -O "${WORKDIR}/web" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-web"
+	chmod 777 "${WORKDIR}/web"
+	GeneratingFiles_Config
+	nohup ${WORKDIR}/web run -c config.json >/dev/null 2>&1 &
+	sleep 2
+	pgrep -x "web" > /dev/null && green "web is running" || { red "web is not running, restarting..."; pkill -x "web" && nohup ./web run -c config.json >/dev/null 2>&1 & sleep 2; purple "web restarted"; }
+fi
+
+pid=$(pgrep -x "cftunnel")
+if [ -z "$pid" ]; then
+	wget -q -O "${WORKDIR}/cftunnel" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-bot"
+	chmod 777 "${WORKDIR}/cftunnel"
+	
+	tunnel = "tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token $ARGO_AUTH"
+	nohup ${WORKDIR}/cftunnel "${tunnel}" >/dev/null 2>&1 &
+	sleep 2
+	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${tunnel}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
+fi
+
+pid=$(pgrep -x "web")
+if [ -n "$pid" ]; then
+	pid=$(pgrep -x "cftunnel")
+	if [ -n "$pid" ]; then
+ 		sleep 1
+		# get ip
+		IP=$(curl -s ipv4.ip.sb || { ipv6=$(curl -s --max-time 1 ipv6.ip.sb); echo "[$ipv6]"; })
+		sleep 1
+		# get ipinfo
+		ISP=$(curl -s https://speed.cloudflare.com/meta | jq -r '.country, .city')
+		sleep 1
+
+		cat > list.txt <<EOF
+		vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"$IP\", \"port\": \"$VMESS_PORT\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
+		
+		vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"www.visa.com\", \"port\": \"443\", \"id\": \"$UUID\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"$ARGO_DOMAIN\", \"path\": \"/vmess?ed=2048\", \"tls\": \"tls\", \"sni\": \"$ARGO_DOMAIN\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
+		
+		EOF
+		cat list.txt
+		purple "list.txt saved successfully, Running done!"
+		sleep 3 
+	else
+ 		red "cftunnel is not running, restarting...";
+	fi
+else
+	red "web is not running, restarting...";
+fi
