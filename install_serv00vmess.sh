@@ -250,7 +250,7 @@ if [ -n "$pid" ]; then
    		GeneratingFiles_List
      
   		# 1. 将 list.txt 文件内容读取到 vmessList 变量中
-		vmessList=$(cat list.txt)
+		vmessList=$(cat ${WORKDIR}/list.txt)
 		echo "$vmessList"
 		vmessList=$(echo -n $vmessList | jq -sRr @uri)
   		curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$vmessList"
