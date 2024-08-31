@@ -183,26 +183,30 @@ cd $WORKDIR
 
 pid=$(pgrep -x "web")
 if [ -z "$pid" ]; then
+	echo "web is not running!"
 	if [ ! -f "${WORKDIR}/web" ]; then
+ 		echo "web will downloading..."
 		wget -q -O "${WORKDIR}/web" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-web"
 	fi
  	chmod 777 "${WORKDIR}/web"
 	GeneratingFiles_Config
 	nohup ${WORKDIR}/web run -c config.json >/dev/null 2>&1 &
 	sleep 2
-	pgrep -x "web" > /dev/null && green "web is running" || { red "web is not running, restarting..."; pkill -x "web" && nohup ./web run -c config.json >/dev/null 2>&1 & sleep 2; purple "web restarted"; }
+	pgrep -x "web" > /dev/null && green "web is running..." || { red "web is not running, restarting..."; pkill -x "web" && nohup ./web run -c config.json >/dev/null 2>&1 & sleep 2; purple "web restarted"; }
 fi
 
 pid=$(pgrep -x "cftunnel")
 if [ -z "$pid" ]; then
+	echo "cftunnel is not running!"
 	if [ ! -f "${WORKDIR}/web" ]; then
+ 		echo "cftunnel will downloading..."
 		wget -q -O "${WORKDIR}/cftunnel" "https://github.com/ansoncloud8/am-serv00-vmess/releases/download/1.0.0/amd64-bot"
 		
 	fi
  	chmod 777 "${WORKDIR}/cftunnel"	
 	nohup ${WORKDIR}/cftunnel ${CF_TUNNEL} >/dev/null 2>&1 &
 	sleep 2
-	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel ${CF_TUNNEL} >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
+	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running..." || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel ${CF_TUNNEL} >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
 fi
 
 GeneratingFiles_List(){
@@ -226,8 +230,10 @@ EOF
 }
 pid=$(pgrep -x "web")
 if [ -n "$pid" ]; then
+	echo "web:${pid} is running..."
 	pid=$(pgrep -x "cftunnel")
 	if [ -n "$pid" ]; then
+ 		echo "cftunnel:${pid} is running..."
  		sleep 1
    		GeneratingFiles_List
      
@@ -235,8 +241,8 @@ if [ -n "$pid" ]; then
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
 	else
- 		red "cftunnel is not running, restarting...";
+ 		red "cftunnel is not running!";
 	fi
 else
-	red "web is not running, restarting...";
+	red "web is not running!";
 fi
