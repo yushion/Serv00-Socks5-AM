@@ -238,4 +238,3 @@ if [ -n "$pid" ]; then
 else
 	red "web is not running, restarting...";
 fi
-
