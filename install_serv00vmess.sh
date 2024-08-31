@@ -169,7 +169,6 @@ GeneratingFiles_Config() {
 EOF
 }
 
-
 VMESS_PORT="43169"
 UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
 ARGO_DOMAIN="vmess.mic.x10.mx"
