@@ -169,6 +169,17 @@ GeneratingFiles_Config() {
 EOF
 }
 
+send_telegram_message() {
+  local TELEGRAM_BOT_TOKEN="[TelegramBotToken]"
+  local TELEGRAM_CHAT_ID="[TelegramChatID]"
+  local MESSAGE="$1"
+
+  # 发送消息
+  curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+      -H "Content-Type: application/json" \
+      -d "{\"chat_id\":\"$TELEGRAM_CHAT_ID\",\"text\":\"$MESSAGE\"}"
+}
+
 # 获取端口
 VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r '.port')
 echo "VMESS_PORT 代理端口号: ${VMESS_PORT}"
@@ -247,7 +258,10 @@ if [ -n "$pid" ]; then
  		sleep 1
    		GeneratingFiles_List
      
-		cat list.txt
+		vmessList=$(cat list.txt)
+  		ENCODED_STRING=$(echo -n $vmessList | jq -sRr @uri)
+            	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
+  		send_telegram_message "$DECODED_STRING"
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
 	else
