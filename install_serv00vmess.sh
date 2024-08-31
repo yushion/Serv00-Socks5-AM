@@ -249,7 +249,6 @@ if [ -n "$pid" ]; then
  		sleep 1
    		GeneratingFiles_List
      
-  		# 1. 将 list.txt 文件内容读取到 vmessList 变量中
 		vmessList=$(cat ${WORKDIR}/list.txt)
 		echo "$vmessList"
 		vmessList=$(echo -n $vmessList | jq -sRr @uri)
