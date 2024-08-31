@@ -251,7 +251,8 @@ if [ -n "$pid" ]; then
      
 		vmessList=$(cat ${WORKDIR}/list.txt)
 		echo "$vmessList"
-		vmessList=$(echo -n $vmessList | jq -sRr @uri)
+		vmessList=$(jq -sRr @uri <<< "$vmessList")
+		vmessList=$(sed 's/%5Cn/%0A/g' <<< "$vmessList")
   		curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$vmessList"
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
