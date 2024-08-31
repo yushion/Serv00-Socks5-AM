@@ -173,7 +173,7 @@ VMESS_PORT="43169"
 UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
 ARGO_DOMAIN="vmess.mic.x10.mx"
 ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
-CF_TUNNEL = "tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
+CF_TUNNEL="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
 
 USER=$(whoami)
 WORKDIR="/home/${USER}/.vmess"
