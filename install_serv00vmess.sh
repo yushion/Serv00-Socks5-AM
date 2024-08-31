@@ -200,9 +200,9 @@ if [ -z "$pid" ]; then
 		
 	fi
  	chmod 777 "${WORKDIR}/cftunnel"	
-	nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 &
+	nohup ${WORKDIR}/cftunnel ${CF_TUNNEL} >/dev/null 2>&1 &
 	sleep 2
-	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel "${CF_TUNNEL}" >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
+	pgrep -x "cftunnel" > /dev/null && green "cftunnel is running" || { red "cftunnel is not running, restarting..."; pkill -x "cftunnel" && nohup ${WORKDIR}/cftunnel ${CF_TUNNEL} >/dev/null 2>&1 & sleep 2; purple "cftunnel restarted"; }
 fi
 
 GeneratingFiles_List(){
