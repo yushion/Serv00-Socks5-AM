@@ -6,7 +6,7 @@ if [ -z "$SOCKS_PORT" ] || [ "$SOCKS_PORT" = "null" ]; then
 	echo "SOCKS_PORT 重新开通新代理端口号: ${SOCKS_PORT}"
 	if [ -z "$SOCKS_PORT" ] || [ "$SOCKS_PORT" = "null" ]; then
 		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
-		exit 1
+		exit 0
 	fi
 fi
 
@@ -106,7 +106,7 @@ if [ -n "$pid" ]; then
         SOCKS_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 		if [ -z "$SOCKS_PORT" ] || [ "$SOCKS_PORT" = "null" ]; then
 			echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
-			exit 1
+			exit 0
 		fi
         install_socks
     fi
@@ -131,7 +131,7 @@ else
             SOCKS_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 		if [ -z "$SOCKS_PORT" ] || [ "$SOCKS_PORT" = "null" ]; then
 			echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
-			exit 1
+			exit 0
 		fi
             install_socks
         fi
