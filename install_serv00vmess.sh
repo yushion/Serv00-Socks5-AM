@@ -177,7 +177,7 @@ if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
 	echo "VMESS_PORT 重新开通新代理端口号: ${VMESS_PORT}"
 	if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
 		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
-		exit 1
+		exit 0
 	fi
 fi
 UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
