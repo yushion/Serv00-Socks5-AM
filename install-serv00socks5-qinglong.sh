@@ -64,7 +64,7 @@ install_socks(){
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
-            echo "\n代理创建成功\n"
+            echo "\\n代理创建成功\\n"
 	    send_telegram_message "$DECODED_STRING"
      	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
 	    
@@ -101,7 +101,7 @@ if [ -n "$pid" ]; then
 	ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
-        echo "\n代理运行正常\n"
+        echo "\\n代理运行正常\\n"
 	curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
 
     else
@@ -126,7 +126,7 @@ else
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
-            echo "\n代理运行正常\n"
+            echo "\\n代理运行正常\\n"
 	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
 
         else
