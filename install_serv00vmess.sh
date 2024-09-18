@@ -169,24 +169,28 @@ GeneratingFiles_Config() {
 EOF
 }
 
+UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
+
+CFWorkers_DOMAIN="http://ssh.auto.cloudns.ch"
+OriginRules_DOMAIN="vmess1.mic.x10.mx"
+
+ARGO_DOMAIN="vmess.mic.x10.mx"
+ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
+CF_TUNNEL="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
+
+
 # 获取端口
-VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/getport?user=[username] | jq -r '.port')
+VMESS_PORT=$(curl -s ${CFWorkers_DOMAIN}/getport?user=[username] | jq -r '.port')
 echo "VMESS_PORT 代理端口号: ${VMESS_PORT}"
 if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
-	VMESS_PORT=$(curl -s http://ssh.auto.cloudns.ch/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
+	VMESS_PORT=$(curl -s ${CFWorkers_DOMAIN}/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 	echo "VMESS_PORT 重新开通新代理端口号: ${VMESS_PORT}"
 	if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
 		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
 		exit 0
 	fi
 fi
-UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
 
-OriginRules_DOMAIN="vmess1.mic.x10.mx"
-
-ARGO_DOMAIN="vmess.mic.x10.mx"
-ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
-CF_TUNNEL="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
 
 USER=$(whoami)
 WORKDIR="/home/${USER}/.vmess"
@@ -254,7 +258,7 @@ if [ -n "$pid" ]; then
 		vmessList=$(cat ${WORKDIR}/list.txt)
 		vmessList=$(jq -sRr @uri <<< "$vmessList")
 		vmessList=$(sed 's/%5Cn/%0A/g' <<< "$vmessList")
-  		curl -s "http://ssh.auto.cloudns.ch/setsocks5?user=[username]&socks5=$vmessList"
+  		curl -s "${CFWorkers_DOMAIN}/setsocks5?user=[username]&socks5=$vmessList"
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
 	else
