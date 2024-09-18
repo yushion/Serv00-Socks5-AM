@@ -181,6 +181,9 @@ if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
 	fi
 fi
 UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
+
+OriginRules_DOMAIN="vmess1.mic.x10.mx"
+
 ARGO_DOMAIN="vmess.mic.x10.mx"
 ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
 CF_TUNNEL="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
@@ -233,7 +236,7 @@ sleep 1
 cat > list.txt <<EOF
 vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"$IP\", \"port\": \"${VMESS_PORT}\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
 
-vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"chat.com\", \"port\": \"80\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"vmess1.mic.x10.mx\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
+vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"chat.com\", \"port\": \"80\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${OriginRules_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
 
 vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"www.visa.com\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
 
