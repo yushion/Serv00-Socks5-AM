@@ -66,7 +66,7 @@ install_socks(){
             curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
             echo "\\n代理创建成功\\n"
 	    send_telegram_message "$DECODED_STRING"
-     	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
+     	    # curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
 	    
             # 设置 crontab 任务
             CRON_SOCKS="nohup ${FILE_PATH}/[socksname] -c ${FILE_PATH}/config.json >/dev/null 2>&1 &"
@@ -102,7 +102,7 @@ if [ -n "$pid" ]; then
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
         echo "\\n代理运行正常\\n"
-	curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
+	# curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
 
     else
         echo "代理不可用，重新开通新端口并安装..."
@@ -127,7 +127,7 @@ else
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
             echo "\\n代理运行正常\\n"
-	    curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
+	    # curl -s "https://sctapi.ftqq.com/[SctapiToken].send?title=$USER:$SOCKS_IP:$SOCKS_PORT"
 
         else
             echo "代理不可用，重新开通新端口并安装..."
