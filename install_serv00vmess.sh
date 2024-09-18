@@ -12,6 +12,15 @@ yellow() { echo -e "\e[1;33m$1\033[0m"; }
 purple() { echo -e "\e[1;35m$1\033[0m"; }
 reading() { read -p "$(red "$1")" "$2"; }
 
+UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
+
+CFWORKERS_DOMAIN="http://ssh.auto.cloudns.ch"
+ORIGINRULES_DOMAIN="vmess1.mic.x10.mx"
+
+ARGO_DOMAIN="vmess.mic.x10.mx"
+ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
+CF_TUNNEL="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
+
 # Generating Configuration Files
 GeneratingFiles_Config() {
   cat > config.json << EOF
@@ -169,21 +178,11 @@ GeneratingFiles_Config() {
 EOF
 }
 
-UUID="951eaa92-b679-4cd7-b85a-151210150ec9"
-
-CFWorkers_DOMAIN="http://ssh.auto.cloudns.ch"
-OriginRules_DOMAIN="vmess1.mic.x10.mx"
-
-ARGO_DOMAIN="vmess.mic.x10.mx"
-ARGO_AUTH="eyJhIjoiYWE3ODEyOGM0NDgzNjFiMWNkYTVjZjdkYjgwM2UwZmEiLCJ0IjoiZTdiMGQzNDctMTAyMC00NjJlLWEzNDAtOWFkZDU5Y2IyNjNmIiwicyI6Ik5qY3hNamMzT0RVdE9ETTVNQzAwTjJJMkxUZ3dZMk10WkRnd1pqZGlZVE0zWXpneiJ9"
-CF_TUNNEL="tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token ${ARGO_AUTH}"
-
-
 # 获取端口
-VMESS_PORT=$(curl -s ${CFWorkers_DOMAIN}/getport?user=[username] | jq -r '.port')
+VMESS_PORT=$(curl -s ${CFWORKERS_DOMAIN}/getport?user=[username] | jq -r '.port')
 echo "VMESS_PORT 代理端口号: ${VMESS_PORT}"
 if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
-	VMESS_PORT=$(curl -s ${CFWorkers_DOMAIN}/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
+	VMESS_PORT=$(curl -s ${CFWORKERS_DOMAIN}/loginAction?user=[username] | jq -r '.port')  # 重新开通新端口
 	echo "VMESS_PORT 重新开通新代理端口号: ${VMESS_PORT}"
 	if [ -z "$VMESS_PORT" ] || [ "$VMESS_PORT" = "null" ]; then
 		echo "错误: 未能获取重新开通新的 SOCKS5 端口。"
@@ -240,7 +239,7 @@ sleep 1
 cat > list.txt <<EOF
 vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"$IP\", \"port\": \"${VMESS_PORT}\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
 
-vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"chat.com\", \"port\": \"80\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${OriginRules_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
+vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"chat.com\", \"port\": \"80\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ORIGINRULES_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"\", \"sni\": \"\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
 
 vmess://$(echo "{ \"v\": \"2\", \"ps\": \"$ISP\", \"add\": \"www.visa.com\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${ARGO_DOMAIN}\", \"path\": \"/vmess?ed=2048\", \"tls\": \"tls\", \"sni\": \"${ARGO_DOMAIN}\", \"alpn\": \"\", \"fp\": \"\"}" | base64 -w0)
 
@@ -258,7 +257,7 @@ if [ -n "$pid" ]; then
 		vmessList=$(cat ${WORKDIR}/list.txt)
 		vmessList=$(jq -sRr @uri <<< "$vmessList")
 		vmessList=$(sed 's/%5Cn/%0A/g' <<< "$vmessList")
-  		curl -s "${CFWorkers_DOMAIN}/setsocks5?user=[username]&socks5=$vmessList"
+  		curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$vmessList"
 		purple "list.txt saved successfully, Running done!"
 		sleep 3 
 	else
