@@ -60,7 +60,7 @@ install_socks(){
         pgrep -x "[socksname]" > /dev/null && echo -e "\e[1;32m[socksname] is running\e[0m" || { echo -e "\e[1;35m[socksname] is not running, restarting...\e[0m"; pkill -x "[socksname]" && nohup "${FILE_PATH}/[socksname]" -c ${FILE_PATH}/config.json >/dev/null 2>&1 & sleep 2; echo -e "\e[1;32m[socksname] restarted\e[0m"; }
         SOCKS_IP=$(curl -s ip.sb --socks5 localhost:$SOCKS_PORT)
         if [[ $SOCKS_IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-	    DECODED_STRING="socks5://$SOCKS_IP:$SOCKS_PORT\\nhttps://t.me/socks?server=$SOCKS_IP&port=$SOCKS_PORT\\nhttps://t.me/socks?server=${PUBLIC_DOMAIN}&port=$SOCKS_PORT"
+	    DECODED_STRING="socks5://$SOCKS_IP:$SOCKS_PORT\\nhttps://t.me/socks?server=${PUBLIC_DOMAIN}&port=$SOCKS_PORT"
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
@@ -97,7 +97,7 @@ if [ -n "$pid" ]; then
     response=$(curl --socks5 localhost:$SOCKS_PORT http://ip.gs -o /dev/null -w "%{http_code}" --silent --max-time 10)
     if [ "$response" -eq 200 ]; then
         SOCKS_IP=$(curl -s ip.sb --socks5 localhost:$SOCKS_PORT)
-        DECODED_STRING="socks5://$SOCKS_IP:$SOCKS_PORT\\nhttps://t.me/socks?server=$SOCKS_IP&port=$SOCKS_PORT\\nhttps://t.me/socks?server=${PUBLIC_DOMAIN}&port=$SOCKS_PORT"
+        DECODED_STRING="socks5://$SOCKS_IP:$SOCKS_PORT\\nhttps://t.me/socks?server=${PUBLIC_DOMAIN}&port=$SOCKS_PORT"
 	ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
 	ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
         curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
@@ -122,7 +122,7 @@ else
         response=$(curl --socks5 localhost:$SOCKS_PORT http://ip.gs -o /dev/null -w "%{http_code}" --silent --max-time 10)
         if [ "$response" -eq 200 ]; then
             SOCKS_IP=$(curl -s ip.sb --socks5 localhost:$SOCKS_PORT)
-            DECODED_STRING="socks5://$SOCKS_IP:$SOCKS_PORT\\nhttps://t.me/socks?server=$SOCKS_IP&port=$SOCKS_PORT"
+            DECODED_STRING="socks5://$SOCKS_IP:$SOCKS_PORT\\nhttps://t.me/socks?server=${PUBLIC_DOMAIN}&port=$SOCKS_PORT"
             ENCODED_STRING=$(echo -n $DECODED_STRING | jq -sRr @uri)
             ENCODED_STRING=$(echo "$ENCODED_STRING" | sed 's/%5Cn/%0A/g')
             curl -s "${CFWORKERS_DOMAIN}/setsocks5?user=[username]&socks5=$ENCODED_STRING"
